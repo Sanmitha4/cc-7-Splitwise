@@ -1,5 +1,8 @@
 import {openInteractionManager} from "./presentation/interaction-manager.ts";
 
+import connectionManager from  ("./src/presentation/connection-manager.js");
+
 const run=async()={
-    const {ask,choose,close}=openInteractionManager
+    openConnectionManager()
 }
+run();
