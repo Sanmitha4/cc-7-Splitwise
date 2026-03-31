@@ -9,6 +9,29 @@ const options:Choice[]=[
 ]
 const {ask,choose,close}=openInteractionManager();
 
+const addFriend=async()=>{
+    const name= await ask('Enter friend\'s name:');
+    const email= await ask('Enter friend\'s email:');
+    const phone= await ask('Enter friend\'s phone:');
+
+
+    const openingBalance=await ask('Enter opening balance'{
+        validator:numberValidator
+    });
+
+    const friend={
+        id:Date.now().toString(),
+        name:name!;
+        email:email!;
+        phone:phone!;
+        balance:Number(openingBalance)
+        
+    }
+    console.log('Friend added: ${name},${email},${phone}');
+}
+
+
+
 export const manageFriends=async()=>{
     while(true){
         const choice=await choose('What do you want to do?',options,false);
