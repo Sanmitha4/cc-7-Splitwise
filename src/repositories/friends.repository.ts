@@ -21,6 +21,8 @@ class FriendsRepository{
         return this.friends.find(friend=>friend.phone===phone);
         
     }
+}
+
 searchFriends(lowercase)
 friends.name
 friends.email
