@@ -9,7 +9,7 @@ const options:Choice[]=[
 ]
 const {ask,choose,close}=openInteractionManager();
 
-export const openConnectionManager=async()=>{
+export const manageFriends=async()=>{
     while(true){
         const choice=await choose('What do you want to do?',options,false);
         
