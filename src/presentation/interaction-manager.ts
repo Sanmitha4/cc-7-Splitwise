@@ -11,19 +11,7 @@ export interface AskOptions{
     validator?:ValidatorFn|undefined;
 }
 
-export const ask = async (question:string, options?:AskOptions) => {
-    const {defaultAnswer,validator}=options||{};
 
-    return new Promise((resolve) => {
-        rl.question(`${question} ${defaultAnswer ? '(' + defaultAnswer + ')' : ''}: `, (answer:string) => {
-            if (validator && !validator(answer)) {
-                console.log('Invalid input. Please try again.');
-                return resolve(ask(question, {defaultAnswer:defaultAnswer, validator:validator}));
-            }
-            resolve(answer || defaultAnswer);
-        });
-    });
-};
 
 export interface Choice{
     label:string;
@@ -45,7 +33,24 @@ export interface Choice{
 // ]
 
 
-export const choose=async (question:string,choices:Choice[])=>{
+
+
+export const openInterractionManager=()=>{
+    const rl=readline.createInterface({input,output});
+    const ask:(question:string,options?:AskOptions) =>Promise<string|undefined>= async (question:string, options?:AskOptions) => {
+    const {defaultAnswer,validator}=options||{};
+
+    return new Promise((resolve) => {
+        rl.question(`${question} ${defaultAnswer ? '(' + defaultAnswer + ')' : ''}: `, (answer:string) => {
+            if (validator && !validator(answer)) {
+                console.log('Invalid input. Please try again.');
+                return resolve(ask(question, {defaultAnswer:defaultAnswer, validator:validator}));
+            }
+            resolve(answer || defaultAnswer);
+        });
+    });
+};
+const choose=async (question:string,choices:Choice[])=>{
     console.log(question);
     choices.forEach((choice)=>{
         console.log(`${choice.value},${choice.label}`)
@@ -56,10 +61,6 @@ export const choose=async (question:string,choices:Choice[])=>{
 
 
 }
-
-export const initialiseInterractionManager=()=>{
-    const rl=readline.createInterface({input,output});
-
     return {
         ask,
         choose,
