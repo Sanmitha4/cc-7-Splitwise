@@ -50,18 +50,24 @@ export const openInterractionManager=()=>{
         });
     });
 };
-const choose=async (question:string,choices:Choice[])=>{
+const choose:(question:string,choices:Choice[],optional?:boolean)=>Promise<Choice|undefined>=async (question:string,choices:Choice[])=>{
     console.log(question);
     choices.forEach((choice)=>{
         console.log(`${choice.value},${choice.label}`)
     });
-    return ask('Please enter your choice:',{
-        validator:(input)=>choices.some(choice=>choice.value===input)
+    const choice=await ask('Please enter your choice:',{
+        validator:(input)=>{
+            if(optional && input.trim()==''){
+                return true;
+            }
+            return choices.some(choice=>choice.value===input)
+        }
     });
-
-
+    return choices.find(c=>c.value===choice);
 }
-    return {
+const close=()=>{
+
+}return{
         ask,
         choose,
     }
