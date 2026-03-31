@@ -14,10 +14,12 @@ class FriendsRepository{
         console.log('Friend added to repository:',friend);
     }
     findFriendByEmail(email:string){
-        return this.friends.find(friend=>friend.)
+        return this.friends.find(friend=>friend.email===email);
+
     }
-    findFriendByPhone(email:string){
-        )
+    findFriendByPhone(phone:string){
+        return this.friends.find(friend=>friend.phone===phone);
+        
     }
 searchFriends(lowercase)
 friends.name
