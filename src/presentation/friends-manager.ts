@@ -1,4 +1,5 @@
 import type {choice} from"./interaction-manager";
+import { Friend } from "../models/friend-model.js";
 
 const options:Choice[]=[
     {label:'Add friend',value:'1'},
@@ -31,7 +32,33 @@ const addFriend=async()=>{
 }
 
 
-const searchFriend=async()=>{}
+const searchFriend=async()=>{
+    if(friends.length===0){
+        console.log("Your friend list is empty");
+        return;
+    }
+    const searchQuery=await ask("Enter a name,email or phone number to search");
+    if(!searchQuery)return;
+
+    const query =searchQuery.toLowerCase();
+
+    const results=friends.filter(friend=>
+        friend.name.toLowerCase().includes(query)||
+        friend.email.toLowerCase().includes(query) ||
+        friend.phone.includes(query)
+    );
+    if(results.length>0){
+        console.log(`\n Found ${results.length} matching friends `)
+        results.forEach(f=>{
+            console.log(` Name:${f.name} | Email:${f.email} | Phone:${f.phone}`)
+        })
+        console.log("=======")
+    }else{
+        console.log("No friends matching is found")
+    }
+
+
+}
 
 
 
