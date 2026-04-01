@@ -31,6 +31,13 @@ const addFriend=async()=>{
 }
 
 
+const searchFriend=async()=>{}
+
+
+
+
+
+
 
 export const manageFriends=async()=>{
     while(true){
@@ -53,7 +60,6 @@ export const manageFriends=async()=>{
                 console.log('Exiting...');
                 close();
                 return;
-
         }
     }
 }

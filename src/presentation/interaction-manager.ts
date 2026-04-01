@@ -1,8 +1,9 @@
-import * readline from'node:readline;
+import * as readline from'node:readline;
+import {stdin as input,stdout as output} from'node:process';
+import {ValidatorFn} from '../core/validator/validator.type';
 
-const { stdin: input, stdout: output } = require('node:process');
 
-const rl = readline.createInterface({ input, output });
+//const rl = readline.createInterface({ input, output });
 
 //export type ValidationFunctionConstructor=(errorMessage:string)=>ValidatorFn;
 
@@ -11,13 +12,10 @@ export interface AskOptions{
     validator?:ValidatorFn|undefined;
 }
 
-
-
 export interface Choice{
     label:string;
     value:string
 }
-
 
 // const genders:Choice[]=[
 //     {label:'Male',value:'M'}
@@ -33,9 +31,7 @@ export interface Choice{
 // ]
 
 
-
-
-export const openInterractionManager=()=>{
+export const openInteractionManager=()=>{
     const rl=readline.createInterface({input,output});
     const ask:(question:string,options?:AskOptions) =>Promise<string|undefined>= async (question:string, options?:AskOptions) => {
     const {defaultAnswer,validator}=options||{};
@@ -57,7 +53,7 @@ const choose:(question:string,choices:Choice[],optional?:boolean)=>Promise<Choic
     });
     const choice=await ask('Please enter your choice:',{
         validator:(input)=>{
-            if(optional && input.trim()==''){
+            if(!optional && input.trim()==''){
                 return true;
             }
             return choices.some(choice=>choice.value===input)
@@ -65,9 +61,8 @@ const choose:(question:string,choices:Choice[],optional?:boolean)=>Promise<Choic
     });
     return choices.find(c=>c.value===choice);
 }
-const close=()=>{
-
-}return{
+const close=()=>rl.close();
+return{
         ask,
         choose,
     }
