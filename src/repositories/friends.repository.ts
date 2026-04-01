@@ -48,9 +48,24 @@ class FriendsRepository{
       matched: filtered.length,
       total: this.friends.length,
     };
-  }
+}
+updateFriend(id:String,updates:Partial<Omit<Friend,'id'>>> ):Friend|null{
+        const index =this.friends.findIndex(friend=>friend.id===id);
+
+        if(index ===-1){
+            console.error(`Update failed: Friend with id ${id} not found.`);
+            return null;
+        }
+        const updatedFriend = { ...this.friends[index], ...updates };
+
+        this.friends[index] = updatedFriend;
+
+        console.log('Friend updated in repository:', updatedFriend);
+        return updatedFriend;
+    }
+  
 
   test() {}
-}
+
 
 export const friendsRepository=new FriendsRepository();

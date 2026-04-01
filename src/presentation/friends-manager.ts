@@ -57,14 +57,7 @@ const searchFriend=async()=>{
         console.log("No friends matching is found")
     }
 
-
 }
-
-
-
-
-
-
 
 export const manageFriends=async()=>{
     while(true){
