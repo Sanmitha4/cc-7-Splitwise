@@ -21,12 +21,25 @@ class FriendsRepository{
         return this.friends.find(friend=>friend.phone===phone);
         
     }
+    searchFriends(querry: string, pageOptions?: pageOptions): PageResult<Friend> {
+    const lowerQuerry = querry.toLowerCase();
+    const filtered = this.friends.filter(
+      (friend) =>
+        friend.name.toLowerCase().includes(lowerQuerry) ||
+        friend.email.toLowerCase().includes(lowerQuerry) ||
+        friend.phone.toLowerCase().includes(lowerQuerry),
+    );
+    return {
+      data: filtered.slice(
+        pageOptions?.offset || 0,
+        (pageOptions?.offset || 0) + (pageOptions?.limit || 5),
+      ),
+      matched: filtered.length,
+      total: this.friends.length,
+    };
+  }
+
+  test() {}
 }
-
-searchFriends(lowercase)
-friends.name
-friends.email
-friends.phone
-
 
 export const friendsRepository=new FriendsRepository();
