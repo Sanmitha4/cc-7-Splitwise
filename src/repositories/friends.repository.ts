@@ -63,6 +63,18 @@ updateFriend(id:String,updates:Partial<Omit<Friend,'id'>>> ):Friend|null{
         console.log('Friend updated in repository:', updatedFriend);
         return updatedFriend;
     }
+    removeFriend(id: string): boolean {
+        const index = this.friends.findIndex(friend => friend.id === id);
+        
+        if (index === -1) {
+            console.error(`Remove failed: Friend with id ${id} not found.`);
+            return false; 
+        }
+
+        const removedFriend = this.friends.splice(index, 1)[0];
+        console.log(`Friend removed from repository:`, removedFriend);
+        return true;
+    }
   
 
   test() {}
