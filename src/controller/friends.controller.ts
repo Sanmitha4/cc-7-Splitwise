@@ -11,3 +11,4 @@ export class FriendsController{
         console.log('Adding friend to database...',friend);
     }
 }
+export const friendsController = new FriendsController();

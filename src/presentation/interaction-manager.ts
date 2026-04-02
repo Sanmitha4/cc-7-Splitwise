@@ -1,11 +1,6 @@
 import * as readline from 'node:readline';
 import { stdin as input, stdout as output } from 'node:process';
-import type { ValidatorFn } from '../core/validator/validator.type.ts'; // Now ends in .ts
-
-
-//const rl = readline.createInterface({ input, output });
-
-//export type ValidationFunctionConstructor=(errorMessage:string)=>ValidatorFn;
+import type { ValidatorFn } from '../core/validator/validator.type.js'; 
 
 export interface AskOptions{
     defaultAnswer?:string|undefined;
@@ -16,21 +11,19 @@ export interface Choice{
     label:string;
     value:string
 }
+/*
+const genders:Choice[]=[
+    {label:'Male',value:'M'}
+    {label:'Female',value:'F'}
+    {label:'Other',value:'O'}
 
-// const genders:Choice[]=[
-//     {label:'Male',value:'M'}
-//     {label:'Female',value:'F'}
-//     {label:'Other',value:'O'}
-
-// ]
-
-// const expenseTypes:Choice[]=[
-//     {label:'Food',value:'FOOD'},
-//     {label:'Transport',value:'TRANSPORT'},
-//     {label:'Entertainment',value:'ENTERTAINMENT'}
-// ]
-
-
+]
+const expenseTypes:Choice[]=[
+    {label:'Food',value:'FOOD'},
+    {label:'Transport',value:'TRANSPORT'},
+    {label:'Entertainment',value:'ENTERTAINMENT'}
+]
+*/
 export const openInteractionManager=()=>{
     const rl=readline.createInterface({input,output});
     const ask:(question:string,options?:AskOptions) =>Promise<string|undefined>= async (question:string, options?:AskOptions) => {
@@ -65,5 +58,6 @@ const close=()=>rl.close();
 return{
         ask,
         choose,
+        close
     }
 }

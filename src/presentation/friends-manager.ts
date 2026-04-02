@@ -35,47 +35,33 @@ const addFriend=async()=>{
 }
 
 
-const searchFriend=async()=>{
-    if(friends.length===0){
-        console.log("Your friend list is empty");
-        return;
-    }
-    const searchQuery=await ask("Enter a name,email or phone number to search");
-    if(!searchQuery)return;
+// const searchFriend=async()=>{
+//     if(friends.length===0){
+//         console.log("Your friend list is empty");
+//         return;
+//     }
+//     const searchQuery=await ask("Enter a name,email or phone number to search");
+//     if(!searchQuery)return;
 
-    const query =searchQuery.toLowerCase();
+//     const query =searchQuery.toLowerCase();
 
-    const results=friends.filter(friend=>
-        friend.name.toLowerCase().includes(query)||
-        friend.email.toLowerCase().includes(query) ||
-        friend.phone.includes(query)
-    );
-    if(results.length>0){
-        console.log(`\n Found ${results.length} matching friends `)
-        results.forEach(f=>{
-            console.log(` Name:${f.name} | Email:${f.email} | Phone:${f.phone}`)
-        })
-        console.log("=======")
-    }else{
-        console.log("No friends matching is found")
-    }
-}
+//     const results=friends.filter(friend=>
+//         friend.name.toLowerCase().includes(query)||
+//         friend.email.toLowerCase().includes(query) ||
+//         friend.phone.includes(query)
+//     );
+//     if(results.length>0){
+//         console.log(`\n Found ${results.length} matching friends `)
+//         results.forEach(f=>{
+//             console.log(` Name:${f.name} | Email:${f.email} | Phone:${f.phone}`)
+//         })
+//         console.log("=======")
+//     }else{
+//         console.log("No friends matching is found")
+//     }
+// }
 
-const searchFriend = async () => {
-    const query = await ask("Enter search term (name/email/phone):");
-    if (!query) return;
 
-    const results = friendsRepository.searchFriends(query, { offset: 0, limit: 10 });
-
-    if (results.match > 0) {
-        console.log(`\nFound ${results.match} matches:`);
-        results.data.forEach((f, i) => {
-            console.log(`[${i + 1}] ID: ${f.id} | Name: ${f.name} | Balance: ${f.balance}`);
-        });
-    } else {
-        console.log("No matching friends found.");
-    }
-};
 
 const updateFriend = async () => {
     const id = await ask("Enter the ID of the friend to update:");

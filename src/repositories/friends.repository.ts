@@ -142,7 +142,7 @@ class FriendsRepository {
             return null;
         }
 
-        const updatedFriend = { ...this.friends[index], ...updates };
+        const updatedFriend:Friend = { ...this.friends[index], ...updates };
         this.friends[index] = updatedFriend;
 
         console.log('Friend updated in repository:', updatedFriend);
