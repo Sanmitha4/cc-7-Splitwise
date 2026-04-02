@@ -10,5 +10,12 @@ export class FriendsController{
     addFriend(friend:friendModel.Friend){
         console.log('Adding friend to database...',friend);
     }
+
+    serchFriend
+    UpdateFriend
+    removeFriend
 }
+
+
+
 export const friendsController = new FriendsController();

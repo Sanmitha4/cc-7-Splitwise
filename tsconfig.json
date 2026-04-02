@@ -16,7 +16,6 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     
-    /* FIXES BELOW */
     "noEmit": false, 
     // "allowImportingTsExtensions": true, (Comment this out for Node.js)
 

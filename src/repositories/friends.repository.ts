@@ -113,7 +113,6 @@ class FriendsRepository {
         return this.friends.find(friend => friend.phone === phone);
     }
 
-    // Fix: Corrected type names (PageOptions, PageResults) and parameter spelling
     searchFriends(query: string, pageOptions?: PageOptions): PageResults<Friend> {
         const lowerQuery = query.toLowerCase();
         const filtered = this.friends.filter(
