@@ -1,5 +1,8 @@
-import type {choice} from"./interaction-manager";
-import { Friend } from "../models/friend-model.js";
+import type { Choice } from "./interaction-manager.js";
+import { openInteractionManager } from "./interaction-manager.js";
+import type { Friend } from "../models/friend-model.js";
+import { numberValidator } from "../core/validator/number.validator.js";
+import { friendsRepository } from "../repositories/friends.repository.js";
 
 const options:Choice[]=[
     {label:'Add friend',value:'1'},
@@ -16,18 +19,19 @@ const addFriend=async()=>{
     const phone= await ask('Enter friend\'s phone:');
 
 
-    const openingBalance=await ask('Enter opening balance'{
+    const openingBalance=await ask('Enter opening balance',{
         validator:numberValidator
     });
 
     const friend={
         id:Date.now().toString(),
-        name:name!;
-        email:email!;
-        phone:phone!;
+        name:name!,
+        email:email!,
+        phone:phone!,
         balance:Number(openingBalance)
         
     }
+    friendsRepository.addFriend(friend)
     console.log('Friend added: ${name},${email},${phone}');
 }
 
