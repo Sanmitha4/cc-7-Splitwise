@@ -83,7 +83,7 @@
 // export const friendsRepository=new FriendsRepository();
 
 import type{ Friend } from "../models/friend-model.js";
-import type{ PageOptions, PageResults } from "../core/validator/pagination.types.ts";
+import type{ PageOptions, PageResults } from "../core/pagination.types.ts";
 
 class FriendsRepository {
     private static instance: FriendsRepository;

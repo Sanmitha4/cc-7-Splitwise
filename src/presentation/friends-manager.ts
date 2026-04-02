@@ -18,7 +18,6 @@ const addFriend=async()=>{
     const email= await ask('Enter friend\'s email:');
     const phone= await ask('Enter friend\'s phone:');
 
-
     const openingBalance=await ask('Enter opening balance',{
         validator:numberValidator
     });
@@ -60,8 +59,49 @@ const searchFriend=async()=>{
     }else{
         console.log("No friends matching is found")
     }
-
 }
+
+const searchFriend = async () => {
+    const query = await ask("Enter search term (name/email/phone):");
+    if (!query) return;
+
+    const results = friendsRepository.searchFriends(query, { offset: 0, limit: 10 });
+
+    if (results.match > 0) {
+        console.log(`\nFound ${results.match} matches:`);
+        results.data.forEach((f, i) => {
+            console.log(`[${i + 1}] ID: ${f.id} | Name: ${f.name} | Balance: ${f.balance}`);
+        });
+    } else {
+        console.log("No matching friends found.");
+    }
+};
+
+const updateFriend = async () => {
+    const id = await ask("Enter the ID of the friend to update:");
+    if (!id) return;
+
+    console.log("Leave blank to keep current value.");
+    const name = await ask("New name:");
+    const email = await ask("New email:");
+    const phone = await ask("New phone:");
+
+    const updates: Partial<Friend> = {};
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+    if (phone) updates.phone = phone;
+
+    const result = friendsRepository.updateFriend(id, updates);
+    if (result) console.log("Friend updated successfully.");
+};
+
+const removeFriend = async () => {
+    const id = await ask("Enter the ID of the friend to remove:");
+    if (!id) return;
+
+    const success = friendsRepository.removeFriend(id);
+    if (success) console.log("Friend removed.");
+};
 
 export const manageFriends=async()=>{
     while(true){
@@ -69,15 +109,19 @@ export const manageFriends=async()=>{
         
         switch (choice!.value){
             case '1':
+                await addFriend();
                 console.log('Adding friend...');
                 break;
             case '2':
+                await searchFriend();
                 console.log('Searching friend...');
                 break;
             case '3':
+                await updateFriend();
                 console.log('Updating friend...');
                 break;
             case '4':
+                await removeFriend();
                 console.log('Removing friend...');
                 break;
             case '5':
