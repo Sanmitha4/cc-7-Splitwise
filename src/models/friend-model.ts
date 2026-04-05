@@ -8,7 +8,18 @@
 //     //updatedAt:Date;
 // }
 
-import type { Row } from '../core/storage/db.js';
+// import type { Row } from '../core/storage/db.js';
+
+// export interface Friend extends Row {
+//   id: string;
+//   name: string;
+//   email: string;
+//   phone: string;
+//   balance: number;
+//   address: string;
+// }
+
+import type { Row } from '../core/storage/db.js'; // FIX: Path from models to core/storage
 
 export interface Friend extends Row {
   id: string;
@@ -16,5 +27,5 @@ export interface Friend extends Row {
   email: string;
   phone: string;
   balance: number;
-  address: string;
+  address: string; // Ensure this matches your requirement for friend info
 }

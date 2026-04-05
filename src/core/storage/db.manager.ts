@@ -3,8 +3,9 @@ import {
   type Dataset,
   type Row,
   JsonAdapter,
-} from '../core/storage/db.js';
-import type { Friend } from './friend.model.js';
+} from './db.js';
+
+import type { Friend } from '../../models/friend-model.js'
 
 interface AppData extends Dataset {
   friends: Friend[];

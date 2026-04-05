@@ -69,7 +69,7 @@ export class Database<T extends Dataset, K extends keyof T> {
       } catch (err) {
         throw err;
       }
-      this.dataStore = this.adapter.parse(data) as DS;
+      this.dataStore = this.adapter.parse(data) as T;
     }
   }
 

@@ -1,28 +1,23 @@
-
-import type { Friend } from "../models/friend-model.js";
 import { friendsRepository } from "../repositories/friends.repository.js";
-
 export class FriendsController {
-    private repository = friendsRepository;
-
-    checkEmailExists(email: string) {
+    repository = friendsRepository;
+    checkEmailExists(email) {
         return false;
     }
-    checkPhoneExists(phone: string) {
+    checkPhoneExists(phone) {
         return false;
     }
-    addFriend(friend: Friend) {
+    addFriend(friend) {
         console.log('Adding friend to database...', friend);
         this.repository.addFriend(friend);
     }
-    findFriend(name: string) {
+    findFriend(name) {
         if (!this.repository) {
             return undefined;
         }
         return this.repository.findFriendByName(name);
     }
-
-    updateFriends(friend: Friend) {
+    updateFriends(friend) {
         if (!this.repository) {
             return { success: false };
         }
@@ -30,7 +25,7 @@ export class FriendsController {
         const { id, ...updates } = friend;
         return this.repository.updateFriend(id, updates);
     }
-    emoveFriends(name: string) {
+    emoveFriends(name) {
         if (!this.repository) {
             return { success: false };
         }
@@ -41,5 +36,5 @@ export class FriendsController {
         return this.repository.getAllFriends();
     }
 }
-
 export const friendsController = new FriendsController();
+//# sourceMappingURL=friends.controller.js.map
