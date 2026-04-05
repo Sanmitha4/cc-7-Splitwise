@@ -1,19 +1,47 @@
-import type friendModel = require("../models/friend-model");
 
-export class FriendsController{
-    checkEmailExists(email:string){
+import type { Friend } from "../models/friend-model.js";
+import { friendsRepository } from "../repositories/friends.repository.js";
+
+export class FriendsController {
+    private repository = friendsRepository;
+
+    checkEmailExists(email: string) {
         return false;
     }
-    checkPhoneExists(phone:string){
+    checkPhoneExists(phone: string) {
         return false;
     }
-    addFriend(friend:friendModel.Friend){
-        console.log('Adding friend to database...',friend);
+    addFriend(friend: Friend) {
+        console.log('Adding friend to database...', friend);
+        this.repository.addFriend(friend);
+    }
+    findFriend(name: string) {
+        if (!this.repository) {
+            return undefined;
+        }
+        return this.repository.findFriendByName(name);
     }
 
-    serchFriend
-    UpdateFriend
-    removeFriend
+    updateFriends(friend: Friend) {
+        if (!this.repository) {
+            return { success: false };
+        }
+        console.log(`Updated ${friend.name}...`);
+        const { id, ...updates } = friend;
+        return this.repository.updateFriend(id, updates);
+    }
+
+    removeFriends(name: string) {
+        if (!this.repository) {
+            return { success: false };
+        }
+        console.log(`Deleted ${name}...`);
+        this.repository.removeFriendByName(name);
+    }
+
+    allFriends() {
+        return this.repository.getAllFriends();
+    }
 }
 
 

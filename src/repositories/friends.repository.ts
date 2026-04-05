@@ -160,6 +160,21 @@ class FriendsRepository {
         console.log(`Friend removed from repository:`, removedFriend);
         return true;
     }
+
+    findFriendByName(name: string): Friend | undefined {
+        return this.friends.find(friend => friend.name === name);
+    }
+
+    removeFriendByName(name: string): boolean {
+        const index = this.friends.findIndex(friend => friend.name === name);
+        if (index === -1) return false;
+        this.friends.splice(index, 1);
+        return true;
+    }
+
+    getAllFriends(): Friend[] {
+        return this.friends;
+    }
 }
 
 // Fix: Use the Singleton getInstance() method instead of 'new'

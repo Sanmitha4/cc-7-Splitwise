@@ -1,7 +1,11 @@
-import type { RmOptions } from "node:fs";
 
-export class ConflictError extends Error{
-    conflictProperty:string;
-    constructor(conflictProperty:
-    )
+export class ConflictError extends Error {
+    conflictError: string;
+
+    constructor(message: string, conflictError: string) {
+        super(message);
+        this.name = "ConflictError";
+        this.conflictError = conflictError;
+
+    }
 }

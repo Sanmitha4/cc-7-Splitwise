@@ -1,4 +1,4 @@
-import type friendModel = require("../models/friend-model");
+import type { Friend } from "../models/friend-model.js";
 
 export interface PageOptions{
     offset:number,
@@ -9,3 +9,4 @@ export interface PageResults<T>{
     total:number;
 
 }   
+
