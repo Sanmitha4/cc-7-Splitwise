@@ -3,6 +3,13 @@ import { openInteractionManager } from "./interaction.manager.js";
 import type { Friend } from "../models/friend.model.js";
 import { numberValidator } from "../core/validator/number.validator.js";
 import { friendsRepository } from "../repositories/friends.repository.js";
+import { friendsController } from "../controller/friends.controller.js";
+import { ConflictError } from "../core/errors/conflict.error.js";
+import { 
+    nameValidator, 
+    emailValidator, 
+    phoneValidator 
+} from "../core/validator/addFriend.validator.js";
 
 const options: Choice[] = [
   { label: "Add friend", value: "1" },
@@ -14,37 +21,104 @@ const options: Choice[] = [
 
 const { ask, choose, close } = openInteractionManager();
 
+// const addFriend = async () => {
+//   const name = await ask("Enter friend's name:");
+//   if (!name) {
+//     console.log("Name is required to add a friend.");
+//     return;
+//   }
+
+//   const email = await ask("Enter friend's email:");
+//   const phone = await ask("Enter friend's phone:");
+//   //const address = await ask("Enter friend's address:");
+
+//   const openingBalance = await ask(
+//     "Enter opening balance (use +ve if they owe you, -ve if you owe them):",
+//     {
+//       validator: numberValidator,
+//     },
+//   );
+
+//   const friend: Friend = {
+//     id: Date.now().toString(),
+//     name: name!,
+//     email: email!,
+//     phone: phone!,
+//     //address: address!,
+//     balance: Number(openingBalance) || 0,
+//   };
+
+//   await friendsRepository.addFriend(friend);
+//   console.log(`Friend added: ${name} | ${email} | ${phone}`);
+// };
 const addFriend = async () => {
-  const name = await ask("Enter friend's name:");
-  if (!name) {
-    console.log("Name is required to add a friend.");
-    return;
-  }
+    const friendFormData = {
+        name: '',
+        email: '',
+        phone: '',
+        openingBalance: '0'
+    };
+    const showFriendForm = async () => {
+    try {
+        if (!friendFormData.name) {
+            // The ?? '' ensures that if ask returns undefined, we assign an empty string instead
+            friendFormData.name = (await ask("Enter friend's name:", { validator: nameValidator })) ?? '';
+        }
 
-  const email = await ask("Enter friend's email:");
-  const phone = await ask("Enter friend's phone:");
-  //const address = await ask("Enter friend's address:");
+        if (!friendFormData.email) {
+            friendFormData.email = (await ask("Enter friend's email:", { validator: emailValidator })) ?? '';
+        }
 
-  const openingBalance = await ask(
-    "Enter opening balance (use +ve if they owe you, -ve if you owe them):",
-    {
-      validator: numberValidator,
-    },
-  );
+        if (!friendFormData.phone) {
+            friendFormData.phone = (await ask("Enter friend's phone:", { validator: phoneValidator })) ?? '';
+        }
 
-  const friend: Friend = {
-    id: Date.now().toString(),
-    name: name!,
-    email: email!,
-    phone: phone!,
-    //address: address!,
-    balance: Number(openingBalance) || 0,
-  };
+        if (friendFormData.openingBalance === '0') {
+            friendFormData.openingBalance = (await ask(
+                "Enter opening balance (use +ve if they owe you, -ve if you owe them):",
+                { validator: numberValidator }
+            )) ?? '0';
+        }
 
-  await friendsRepository.addFriend(friend);
-  console.log(`Friend added: ${name} | ${email} | ${phone}`);
+        return friendFormData;
+
+    } catch (error) {
+        console.error("\n Friend registration interrupted.");
+        return null;
+    }
 };
 
+   
+
+    const result = await showFriendForm();
+
+    if (result) {
+        try {
+            const friend: Friend = {
+                id: Date.now().toString(),
+                name: result.name,
+                email: result.email,
+                phone: result.phone,
+                balance: Number(result.openingBalance) || 0,
+            };
+
+            await friendsController.addFriend(friend);
+            console.log(`\nFriend added: ${friend.name} | ${friend.email} | ${friend.phone}`);
+
+        } catch (error) {
+            if (error instanceof ConflictError) {
+                console.log(`\nRegistration Failed: ${error.message}`);
+                
+                if (error.conflictError === "DUPLICATE_EMAIL") {
+                    friendFormData.email = '';
+                    
+                }
+            } else {
+                console.error("\nSystem Error:", error);
+            }
+        }
+    }
+};
 const searchFriend = async () => {
   if (friendsRepository.getAllFriends().length === 0) {
     console.log("Your friend list is empty.");

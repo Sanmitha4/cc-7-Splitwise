@@ -1,1 +1,1 @@
-export type ValidatorFn=(value:string)=>boolean;
+export type ValidatorFn=(value:string)=>boolean|string;

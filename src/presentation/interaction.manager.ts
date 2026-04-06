@@ -26,19 +26,50 @@ const expenseTypes:Choice[]=[
 */
 export const openInteractionManager=()=>{
     const rl=readline.createInterface({input,output});
-    const ask:(question:string,options?:AskOptions) =>Promise<string|undefined>= async (question:string, options?:AskOptions) => {
-    const {defaultAnswer,validator}=options||{};
+    const ask: (question: string, options?: AskOptions) => Promise<string | undefined> = async (question: string, options?: AskOptions) => {
+        const { defaultAnswer, validator } = options || {};
 
-    return new Promise((resolve) => {
-        rl.question(`${question} ${defaultAnswer ? '(' + defaultAnswer + ')' : ''}: `, (answer:string) => {
-            if (validator && !validator(answer)) {
-                console.log('Invalid input. Please try again.');
-                return resolve(ask(question, {defaultAnswer:defaultAnswer, validator:validator}));
-            }
-            resolve(answer || defaultAnswer);
+        return new Promise((resolve) => {
+            rl.question(`${question} : `, (answer: string) => {
+                const trimmedAnswer = answer.trim() || defaultAnswer;
+
+                if (validator) {
+                    const validationResult = validator(trimmedAnswer || "");
+
+                    // If validationResult is a string, it means validation failed 
+                    // and the string IS the error message.
+                    if (typeof validationResult === "string") {
+                        console.log(`${validationResult}`); // Print the actual error message
+                        return resolve(ask(question, options)); // Recursive call to try again
+                    }
+
+                    // If it's a boolean and it's false, show generic error
+                    if (validationResult === false) {
+                        console.log('Invalid input. Please try again.');
+                        return resolve(ask(question, options));
+                    }
+                }
+
+                resolve(trimmedAnswer);
+            });
         });
-    });
-};
+    };
+
+    // ... rest of your code
+//     const ask:(question:string,options?:AskOptions) =>Promise<string|undefined>= async (question:string, options?:AskOptions) => {
+//     const {defaultAnswer,validator}=options||{};
+
+//     return new Promise((resolve) => {
+//         rl.question(`${question} ${defaultAnswer ? '(' + defaultAnswer + ')' : ''}: `, (answer:string) => {
+//             if (validator && !validator(answer)) {
+//                 console.log('Invalid input. Please try again.');
+//                 return resolve(ask(question, {defaultAnswer:defaultAnswer, validator:validator}));
+//             }
+//             resolve(answer || defaultAnswer);
+//         });
+//     });
+// };
+
 const choose:(question:string,choices:Choice[],optional?:boolean)=>Promise<Choice|undefined>=async (question:string,choices:Choice[],optional?:boolean)=>{
     console.log(question);
     choices.forEach((choice)=>{

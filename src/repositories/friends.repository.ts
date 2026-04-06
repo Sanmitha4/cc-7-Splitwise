@@ -2,6 +2,7 @@ import { AppDBManager } from "../models/db.manager.js";
 import type { Friend } from "../models/friend.model.js";
 import type { PageOptions, PageResults } from "../core/pagination.types.js";
 
+
 class FriendsRepository {
   private static sharedInstance: FriendsRepository;
   friends: Friend[] = [];
