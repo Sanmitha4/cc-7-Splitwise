@@ -218,11 +218,13 @@ class FriendsRepository {
     /**
      * Adds a new friend and saves to disk.
      */
-    addFriend(friend: Friend): void {
+    addFriend(friend: Friend) {
         this.friends.push(friend);
         this.persist();
-        console.log('Friend added and persisted to repository:', friend.name);
+        console.log(`Friend added to repository with id :${friend.id}1`, friend);
     }
+
+    
 
     /**
      * Finds a friend by their unique email.
