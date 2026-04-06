@@ -1,5 +1,5 @@
-import type { Choice } from "./interaction-manager.js";
-import { openInteractionManager } from "./interaction-manager.js";
+import type { Choice } from "./interaction.manager.js";
+import { openInteractionManager } from "./interaction.manager.js";
 import type { Friend } from "../models/friend.model.js";
 import { numberValidator } from "../core/validator/number.validator.js";
 import { friendsRepository } from "../repositories/friends.repository.js";

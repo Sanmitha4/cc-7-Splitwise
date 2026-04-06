@@ -9,7 +9,7 @@
 // run();
 
 
-import { manageFriends } from "./presentation/friends-manager.js"; 
+import { manageFriends } from "./presentation/friends.manager.js"; 
 
 const run = async () => {
     console.log("SPLITWISE STARTING...");
