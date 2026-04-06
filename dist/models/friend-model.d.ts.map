@@ -1,1 +1,0 @@
-{"version":3,"file":"friend-model.d.ts","sourceRoot":"","sources":["../../src/models/friend-model.ts"],"names":[],"mappings":"AAqBA,OAAO,KAAK,EAAE,GAAG,EAAE,MAAM,uBAAuB,CAAC;AAEjD,MAAM,WAAW,MAAO,SAAQ,GAAG;IACjC,EAAE,EAAE,MAAM,CAAC;IACX,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,MAAM,CAAC;IACd,KAAK,EAAE,MAAM,CAAC;IACd,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;CACjB"}
