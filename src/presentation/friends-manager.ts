@@ -117,7 +117,6 @@
 //         }
 //     }
 // }
-
 import type { Choice } from "./interaction-manager.js";
 import { openInteractionManager } from "./interaction-manager.js";
 import type { Friend } from "../models/friend-model.js";
@@ -135,8 +134,7 @@ const options: Choice[] = [
 const { ask, choose, close } = openInteractionManager();
 
 /**
- * Captures user input to create a new friend.
- * Requirement: Name is mandatory; Email, Phone, and Address are collected.
+ * Adds a new friend to the system and persists to data.json
  */
 const addFriend = async () => {
     const name = await ask("Enter friend's name:");
@@ -155,35 +153,42 @@ const addFriend = async () => {
 
     const friend: Friend = {
         id: Date.now().toString(),
-        name: name,
-        email: email || "",
-        phone: phone || "",
-        address: address || "",
+        name: name!,
+        email: email!,
+        phone: phone!,
+        address: address!,
         balance: Number(openingBalance) || 0
     };
 
-    friendsRepository.addFriend(friend);
-    console.log(`Friend added: ${name} | ${email || 'No Email'} | ${phone || 'No Phone'}`);
+    // FIXED: Added await to ensure data is saved before printing success message
+    await friendsRepository.addFriend(friend);
+    console.log(`Friend added: ${name} | ${email} | ${phone}`);
 };
 
 /**
- * Implements the search functionality for Name, Email, or Phone.
+ * Searches for friends based on a string query
  */
 const searchFriend = async () => {
-    const searchQuery = await ask("Enter a name, email, or phone number to search:");
+    if (friendsRepository.getAllFriends().length === 0) {
+        console.log("Your friend list is empty.");
+        return;
+    }
+
+    const searchQuery = await ask("Enter search query (Name, Email, or Phone):");
     if (!searchQuery) return;
 
-    // Fetching results from repository with default pagination
-    const results = friendsRepository.searchFriends(searchQuery, { offset: 0, limit: 10 });
+    const results = friendsRepository.searchFriends(searchQuery);
 
     if (results.match > 0) {
-        console.log(`\nFound ${results.match} matching friend(s):`);
-        results.data.forEach(f => {
-            console.log(`ID: ${f.id} | Name: ${f.name} | Email: ${f.email} | Phone: ${f.phone} | Balance: ${f.balance}`);
+        console.log(`\n Found ${results.match} matching friend(s):`);
+        
+        results.data.forEach((f: Friend) => {
+            const status = f.balance >= 0 ? "Lent" : "Owed";
+            console.log(` ID: ${f.id} | Name: ${f.name} | ${status}: $${Math.abs(f.balance)}`);
         });
-        console.log("===============================");
+        console.log("-------------------------------");
     } else {
-        console.log("No friends matching that query were found.");
+        console.log(" No matching friends found.");
     }
 };
 
@@ -206,9 +211,13 @@ const updateFriend = async () => {
     if (phone) updates.phone = phone;
     if (address) updates.address = address;
 
-    const result = friendsRepository.updateFriend(id, updates);
+    // FIXED: Added await to resolve the Promise<Friend | null>
+    const result = await friendsRepository.updateFriend(id, updates);
+    
     if (result) {
-        console.log("Friend updated successfully.");
+        console.log(" Friend updated successfully.");
+    } else {
+        console.log(" Friend not found or update failed.");
     }
 };
 
@@ -219,20 +228,26 @@ const removeFriend = async () => {
     const id = await ask("Enter the ID of the friend to remove:");
     if (!id) return;
 
-    const success = friendsRepository.removeFriend(id);
+    // FIXED: Added await to resolve the Promise<boolean>
+    const success = await friendsRepository.removeFriend(id);
+    
     if (success) {
-        console.log("Friend removed successfully.");
+        console.log("🗑️ Friend removed successfully.");
+    } else {
+        console.log("❌ Friend not found or removal failed.");
     }
 };
 
 /**
- * Main loop for the Connection Module menu.
+ * Main loop for the Friend Management menu.
  */
 export const manageFriends = async () => {
     while (true) {
         const choice = await choose('--- Friend Management ---', options, false);
 
-        switch (choice?.value) {
+        if (!choice) continue;
+
+        switch (choice.value) {
             case '1':
                 await addFriend();
                 break;
@@ -249,9 +264,10 @@ export const manageFriends = async () => {
                 console.log('Returning to main menu...');
                 close();
                 return;
-            default:
-                console.log("Invalid selection.");
-                break;
+            //     break;
+            // default:
+            //     console.log("Invalid selection.");
+            //     break;
         }
     }
 };

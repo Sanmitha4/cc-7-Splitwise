@@ -4,35 +4,60 @@ import * as path from 'path';
 export type ColumnData = string | number | boolean | null;
 export type Row = Record<string, ColumnData>; // name: "", email: "am@email.com", phone: 234
 
-export type Dataset = {
-  [key: string]: Row[];
-};
-export interface DatabaseStorageAdapter {
-  parse: (content: string) => Dataset;
-  serialize: (dataset: Dataset) => string;
+type Table=Row[];
+
+export interface DatabaseStorageAdaptor<T>{
+  parse:(content:string)=>T;
+  serialize: (dataset:T) => string;
 }
 
-export const JsonAdapter: DatabaseStorageAdapter = {
-  parse(content: string) {
+// }
+// export type Dataset = {
+//   [key: string]: Row[];
+// };
+// export interface DatabaseStorageAdapter {
+//   parse: (content: string) => Dataset;
+//   serialize: (dataset: Dataset) => string;
+// }
+
+// export class JsonAdapter<T> implements DatabaseStorageAdapter<T>={ 
+// //export const JsonStorageAdapter<T> implements DatabaseStorageAdapter = {
+//   parse(content: string) {
+//     try {
+//       return JSON.parse(content) as T;
+//     } catch (e) {
+//       console.error(
+//         'Given filePath is not empty and its content is not valid JSON.',
+//       );
+//       throw e;
+//     }
+//   },
+//   serialize(dataset: T):string {
+//     return JSON.stringify(dataset);
+//   },
+// };
+export class JsonAdapter<T> implements DatabaseStorageAdapter<T> {
+  parse(content: string): T {
     try {
       return JSON.parse(content);
-    } catch (e) {
+    } catch(e) {
       console.error(
-        'Given filePath is not empty and its content is not valid JSON.',
+        "Given filePath is not empty and its content is not valid JSON.",
       );
       throw e;
     }
-  },
-  serialize(dataset: Dataset) {
-    return JSON.stringify(dataset);
-  },
-};
+  }
 
-export class Database<T extends Dataset, K extends keyof T> {
+  serialize(dataset: T): string {
+    return JSON.stringify(dataset)
+  }
+}
+
+export class Database<T extends{[K in keyof T]:Table[]} > {
   private readonly dataStore: T = {} as T;
   constructor(
     private readonly filePath: string,
-    private readonly adapter: DatabaseStorageAdapter = JsonAdapter,
+    private readonly adapter: DatabaseStorageAdapter<T>
   ) {
     if (!filePath) {
       throw new Error('Missing file path argument.');
@@ -72,8 +97,7 @@ export class Database<T extends Dataset, K extends keyof T> {
       this.dataStore = this.adapter.parse(data) as T;
     }
   }
-
-  table(tableName: K): T[K] {
+  table(tableName: keyof T): T[keyof T] {
     if (this.dataStore[tableName] === undefined) {
       (this.dataStore as any)[tableName] = [];
     }
@@ -92,3 +116,4 @@ export class Database<T extends Dataset, K extends keyof T> {
     }
   }
 }
+

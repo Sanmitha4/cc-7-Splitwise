@@ -180,157 +180,128 @@
 // // Fix: Use the Singleton getInstance() method instead of 'new'
 // export const friendsRepository = FriendsRepository.getInstance();
 
-
-import { AppDBManager } from '../core/storage/db.manager.js';
+import { AppDBManager } from "../models/db.manager.js";
 import type { Friend } from "../models/friend-model.js";
 import type { PageOptions, PageResults } from "../core/pagination.types.js";
 
 class FriendsRepository {
-    private static instance: FriendsRepository;
-    private friends: Friend[] = [];
-    private db = AppDBManager.getInstance().getDB();
+  // Fix: Corrected the typo from 'ahredinstance'
+  private static sharedInstance: FriendsRepository;
+  friends: Friend[] = [];
 
-    /**
-     * Singleton accessor to ensure only one repository instance exists.
-     */
-    static getInstance(): FriendsRepository {
-        if (!FriendsRepository.instance) {
-            FriendsRepository.instance = new FriendsRepository();
-        }
-        return FriendsRepository.instance;
+  private constructor() {
+    // This connects the local array to the JSON table reference
+    this.friends = AppDBManager.getInstance().getDB().table('friends') as Friend[];
+  }
+
+  static getInstance(): FriendsRepository {
+    if (!this.sharedInstance) {
+      this.sharedInstance = new FriendsRepository();
+    }
+    return this.sharedInstance;
+  }
+
+  /**
+   * Internal helper to trigger the DB save to data.json
+   */
+  private async persist(): Promise<void> {
+    await AppDBManager.getInstance().save();
+  }
+
+  /**
+   * Adds a new friend and persists to storage
+   */
+  async addFriend(friend: Friend): Promise<void> {
+    this.friends.push(friend);
+    await this.persist();
+    console.log(`✅ Friend added: ${friend.name}`);
+  }
+
+  findFriendByEmail(email: string): Friend | undefined {
+    return this.friends.find(
+      (friend) => friend.email.toLowerCase() === email.toLowerCase(),
+    );
+  }
+
+  findFriendByPhone(phone: string): Friend | undefined {
+    return this.friends.find((friend) => friend.phone === phone);
+  }
+
+  searchFriends(query: string, pageOptions?: PageOptions): PageResults<Friend> {
+    const lowerQuery = query.toLowerCase();
+    const filtered = this.friends.filter(
+      (friend) =>
+        friend.name.toLowerCase().includes(lowerQuery) ||
+        friend.email.toLowerCase().includes(lowerQuery) ||
+        friend.phone.toLowerCase().includes(lowerQuery),
+    );
+
+    return {
+      data: filtered.slice(
+        pageOptions?.offset || 0,
+        (pageOptions?.offset || 0) + (pageOptions?.limit || 5),
+      ),
+      match: filtered.length,
+      total: this.friends.length,
+    };
+  }
+
+  async updateFriend(
+    id: string,
+    updates: Partial<Omit<Friend, "id">>,
+  ): Promise<Friend | null> {
+    const index = this.friends.findIndex((friend) => friend.id === id);
+
+    if (index === -1) {
+      console.error(`Update failed: Friend with id ${id} not found.`);
+      return null;
     }
 
-    /**
-     * Private constructor initializes the local array from the 'friends' table 
-     * in the persistent JSON storage.
-     */
-    private constructor() {
-        this.friends = this.db.table('friends') as Friend[];
+    const updatedFriend = { ...this.friends[index], ...updates } as Friend;
+    this.friends[index] = updatedFriend;
+
+    await this.persist();
+    console.log("Friend updated in repository:", updatedFriend.name);
+    return updatedFriend;
+  }
+
+  async removeFriend(id: string): Promise<boolean> {
+    const index = this.friends.findIndex((friend) => friend.id === id);
+
+    if (index === -1) {
+      console.error(`Remove failed: Friend with id ${id} not found.`);
+      return false;
     }
 
-    /**
-     * Internal helper to persist changes to the physical file.
-     */
-    private persist() {
-        AppDBManager.getInstance().save();
+    const removedFriend = this.friends.splice(index, 1)[0];
+
+    if (removedFriend) {
+      await this.persist();
+      console.log(`Friend removed from repository: ${removedFriend.name}`);
+      return true;
     }
 
-    /**
-     * Adds a new friend and saves to disk.
-     */
-    addFriend(friend: Friend) {
-        this.friends.push(friend);
-        this.persist();
-        console.log(`Friend added to repository with id :${friend.id}1`, friend);
+    return false;
+  }
+
+  async removeFriendByName(name: string): Promise<boolean> {
+    const friend = this.findFriendByName(name);
+    if (!friend) {
+      console.error(`Remove failed: Friend with name ${name} not found.`);
+      return false;
     }
+    return await this.removeFriend(friend.id);
+  }
 
-    
+  findFriendByName(name: string): Friend | undefined {
+    return this.friends.find(
+      (friend) => friend.name.toLowerCase() === name.toLowerCase(),
+    );
+  }
 
-    /**
-     * Finds a friend by their unique email.
-     */
-    findFriendByEmail(email: string): Friend | undefined {
-        return this.friends.find(friend => friend.email.toLowerCase() === email.toLowerCase());
-    }
-
-    /**
-     * Finds a friend by their phone number.
-     */
-    findFriendByPhone(phone: string): Friend | undefined {
-        return this.friends.find(friend => friend.phone === phone);
-    }
-
-    /**
-     * Search implementation covering Name, Email, and Phone requirements.
-     */
-    searchFriends(query: string, pageOptions?: PageOptions): PageResults<Friend> {
-        const lowerQuery = query.toLowerCase();
-        const filtered = this.friends.filter(
-            (friend) =>
-                friend.name.toLowerCase().includes(lowerQuery) ||
-                friend.email.toLowerCase().includes(lowerQuery) ||
-                friend.phone.toLowerCase().includes(lowerQuery)
-        );
-
-        return {
-            data: filtered.slice(
-                pageOptions?.offset || 0,
-                (pageOptions?.offset || 0) + (pageOptions?.limit || 5)
-            ),
-            match: filtered.length,
-            total: this.friends.length,
-        };
-    }
-
-    /**
-     * Updates specific friend info while protecting the ID.
-     */
-    updateFriend(id: string, updates: Partial<Omit<Friend, 'id'>>): Friend | null {
-        const index = this.friends.findIndex(friend => friend.id === id);
-
-        if (index === -1) {
-            console.error(`Update failed: Friend with id ${id} not found.`);
-            return null;
-        }
-
-        // Merge existing data with updates and cast as Friend to satisfy type safety.
-        const updatedFriend = { ...this.friends[index], ...updates } as Friend;
-        this.friends[index] = updatedFriend;
-
-        this.persist();
-        console.log('Friend updated in repository:', updatedFriend.name);
-        return updatedFriend;
-    }
-
-    /**
-     * Removes a friend by ID and persists the change.
-     */
-    removeFriend(id: string): boolean {
-        const index = this.friends.findIndex(friend => friend.id === id);
-
-        if (index === -1) {
-            console.error(`Remove failed: Friend with id ${id} not found.`);
-            return false;
-        }
-
-        const removedFriend = this.friends.splice(index, 1)[0];
-        
-        // FIX: Check if removedFriend exists before accessing '.name' to satisfy TS
-        if (removedFriend) {
-            this.persist();
-            console.log(`Friend removed from repository: ${removedFriend.name}`);
-            return true;
-        }
-        
-        return false;
-    }
-
-    /**
-     * FIX: Re-added this method so the Controller can find and delete by name
-     */
-    removeFriendByName(name: string): boolean {
-        const friend = this.findFriendByName(name);
-        if (!friend) {
-            console.error(`Remove failed: Friend with name ${name} not found.`);
-            return false;
-        }
-        return this.removeFriend(friend.id);
-    }
-    
-
-    /**
-     * Requirement-specific helper to find by name.
-     */
-    findFriendByName(name: string): Friend | undefined {
-        return this.friends.find(friend => friend.name.toLowerCase() === name.toLowerCase());
-    }
-
-    /**
-     * Returns all stored friends.
-     */
-    getAllFriends(): Friend[] {
-        return this.friends;
-    }
+  getAllFriends(): Friend[] {
+    return this.friends;
+  }
 }
 
 export const friendsRepository = FriendsRepository.getInstance();

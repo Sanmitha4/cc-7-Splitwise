@@ -5,11 +5,13 @@ export declare class FriendsController {
     checkPhoneExists(phone: string): boolean;
     addFriend(friend: Friend): void;
     findFriend(name: string): Friend | undefined;
-    updateFriends(friend: Friend): Friend | {
+    updateFriends(friend: Friend): Promise<Friend | null> | {
         success: boolean;
-    } | null;
-    emoveFriends(name: string): {
+    };
+    removeFriends(name: string): {
         success: boolean;
+    } | {
+        success: Promise<boolean>;
     };
     allFriends(): Friend[];
 }

@@ -1,24 +1,48 @@
 import * as fs from 'fs';
 import * as path from 'path';
-export const JsonAdapter = {
+// }
+// export type Dataset = {
+//   [key: string]: Row[];
+// };
+// export interface DatabaseStorageAdapter {
+//   parse: (content: string) => Dataset;
+//   serialize: (dataset: Dataset) => string;
+// }
+// export class JsonAdapter<T> implements DatabaseStorageAdapter<T>={ 
+// //export const JsonStorageAdapter<T> implements DatabaseStorageAdapter = {
+//   parse(content: string) {
+//     try {
+//       return JSON.parse(content) as T;
+//     } catch (e) {
+//       console.error(
+//         'Given filePath is not empty and its content is not valid JSON.',
+//       );
+//       throw e;
+//     }
+//   },
+//   serialize(dataset: T):string {
+//     return JSON.stringify(dataset);
+//   },
+// };
+export class JsonAdapter {
     parse(content) {
         try {
             return JSON.parse(content);
         }
         catch (e) {
-            console.error('Given filePath is not empty and its content is not valid JSON.');
+            console.error("Given filePath is not empty and its content is not valid JSON.");
             throw e;
         }
-    },
+    }
     serialize(dataset) {
         return JSON.stringify(dataset);
-    },
-};
+    }
+}
 export class Database {
     filePath;
     adapter;
     dataStore = {};
-    constructor(filePath, adapter = JsonAdapter) {
+    constructor(filePath, adapter) {
         this.filePath = filePath;
         this.adapter = adapter;
         if (!filePath) {
