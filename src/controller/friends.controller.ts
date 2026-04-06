@@ -30,7 +30,7 @@ export class FriendsController {
         const { id, ...updates } = friend;
         return this.repository.updateFriend(id, updates);
     }
-    emoveFriends(name: string) {
+    removeFriends(name: string) {
         if (!this.repository) {
             return { success: false };
         }
