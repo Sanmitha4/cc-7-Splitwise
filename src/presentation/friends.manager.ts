@@ -143,6 +143,7 @@ const listAllFriends = () => {
 
     console.table(tableData); 
 };
+
 const searchFriend = async () => {
   if (friendsRepository.getAllFriends().length === 0) {
     console.log("Your friend list is empty.");
@@ -168,31 +169,96 @@ const searchFriend = async () => {
     }
 };
 
- 
+// src/presentation/friends.manager.ts
+
 const updateFriend = async () => {
-  const updateName = await ask("Enter the name of the friend to update:");
-  if (!updateName) return;
+    // STEP 1: SEARCH
+    const query = await ask("Search for the friend you want to update (Name/Email/Phone):");
+    if (!query) return;
 
-  console.log("Leave blank to keep current value.");
-  const name = await ask("New name:");
-  const email = await ask("New email:");
-  const phone = await ask("New phone:");
-  //const address = await ask("New address:");
+    const queryResult = friendsRepository.searchFriends(query);
 
-  const updates: Partial<Omit<Friend, "id">> = {};
-  if (name) updates.name = name;
-  if (email) updates.email = email;
-  if (phone) updates.phone = phone;
-  //if (address) updates.address = address;
+    if (queryResult.match === 0) {
+        console.log("No friends found matching that query.");
+        return;
+    }
 
-  const result = await friendsRepository.updateFriend(updateName, updates);
+    // STEP 2: DISPLAY & SELECT BY INDEX
+    console.log("\n--- Search Results ---");
+    queryResult.data.map((f: Friend, index: number) => ({
+      "Index": index + 1,
+      "Name": f.name,
+      "Email": f.email,
+      "Phone": f.phone
+    }));
+    
 
-  if (result) {
-    console.log(" Friend updated successfully.");
-  } else {
-    console.log(" Friend not found or update failed.");
-  }
+    const indexInput = await ask("Enter the Index number of the friend to update (or press Enter to cancel):", {
+        validator: (val) => {
+            if (val === "") return true;
+            const num = parseInt(val);
+            return (!isNaN(num) && num > 0 && num <= queryResult.match) || "Please enter a valid index from the table.";
+        }
+    });
+
+    if (!indexInput) return;
+    const friend = queryResult.data[parseInt(indexInput) - 1];
+
+    // STEP 3: EDIT WITH RETRY LOOPS
+    console.log(`\nEditing: ${selectedFriend.name}. Leave blank to keep current value.`);
+
+    const newName = await ask(`New name [${selectedFriend.name}]:`) || selectedFriend.name;
+    
+    // Validate unique email if changed
+    let newEmail = selectedFriend.email;
+    let emailValid = false;
+    while (!emailValid) {
+        const input = await ask(`New email [${selectedFriend.email}]:`, { validator: emailValidator }) || selectedFriend.email;
+        if (input !== selectedFriend.email && friendsController.checkEmailExists(input)) {
+            console.log("This email is already taken by another friend.");
+        } else {
+            newEmail = input;
+            emailValid = true;
+        }
+    }
+
+    const newPhone = await ask(`New phone [${selectedFriend.phone}]:`, { validator: phoneValidator }) || selectedFriend.phone;
+
+    // STEP 4: SAVE
+    const updatedData: Friend = {
+        ...selectedFriend,
+        name: newName,
+        email: newEmail,
+        phone: newPhone
+    };
+
+    await friendsController.updateFriends(updatedData);
+    console.log(`\n${selectedFriend.name} updated successfully!`);
 };
+// const updateFriend = async () => {
+//   const updateName = await ask("Enter the name of the friend to update:");
+//   if (!updateName) return;
+
+//   console.log("Leave blank to keep current value.");
+//   const name = await ask("New name:");
+//   const email = await ask("New email:");
+//   const phone = await ask("New phone:");
+//   //const address = await ask("New address:");
+
+//   const updates: Partial<Omit<Friend, "id">> = {};
+//   if (name) updates.name = name;
+//   if (email) updates.email = email;
+//   if (phone) updates.phone = phone;
+//   //if (address) updates.address = address;
+
+//   const result = await friendsRepository.updateFriend(updateName, updates);
+
+//   if (result) {
+//     console.log(" Friend updated successfully.");
+//   } else {
+//     console.log(" Friend not found or update failed.");
+//   }
+// };
 
 const removeFriend = async () => {
   const id = await ask("Enter the ID of the friend to remove:");
