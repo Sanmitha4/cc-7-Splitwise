@@ -13,10 +13,11 @@ import {
 
 const options: Choice[] = [
   { label: "Add friend", value: "1" },
-  { label: "Search friend", value: "2" },
-  { label: "Update friend", value: "3" },
-  { label: "Remove friend", value: "4" },
-  { label: "Exit", value: "5" },
+  { label: "List all friends", value: "2" },
+  { label: "Search friend", value: "3" },
+  { label: "Update friend", value: "4" },
+  { label: "Remove friend", value: "5" },
+  { label: "Exit", value: "6" },
 ];
 
 const { ask, choose, close } = openInteractionManager();
@@ -30,8 +31,6 @@ const { ask, choose, close } = openInteractionManager();
 
 //   const email = await ask("Enter friend's email:");
 //   const phone = await ask("Enter friend's phone:");
-//   //const address = await ask("Enter friend's address:");
-
 //   const openingBalance = await ask(
 //     "Enter opening balance (use +ve if they owe you, -ve if you owe them):",
 //     {
@@ -44,7 +43,6 @@ const { ask, choose, close } = openInteractionManager();
 //     name: name!,
 //     email: email!,
 //     phone: phone!,
-//     //address: address!,
 //     balance: Number(openingBalance) || 0,
 //   };
 
@@ -61,7 +59,6 @@ const addFriend = async () => {
     const showFriendForm = async () => {
     try {
         if (!friendFormData.name) {
-            // The ?? '' ensures that if ask returns undefined, we assign an empty string instead
             friendFormData.name = (await ask("Enter friend's name:", { validator: nameValidator })) ?? '';
         }
 
@@ -87,8 +84,6 @@ const addFriend = async () => {
         return null;
     }
 };
-
-   
 
     const result = await showFriendForm();
 
@@ -119,6 +114,27 @@ const addFriend = async () => {
         }
     }
 };
+
+const listAllFriends = () => {
+    const friends = friendsController.allFriends(); // Get data from Controller
+    
+    if (friends.length === 0) {
+        console.log("\n📭 Your friends list is empty.");
+        return;
+    }
+
+    console.log("\n--- My Friends ---");
+
+    const tableData = friends.map(f => ({
+        "ID": f.id,
+        "Name": f.name,
+        "Email": f.email,
+        "Phone": f.phone,
+        "Balance": f.balance >= 0 ? `$${f.balance}` : `-$${Math.abs(f.balance)}`
+    }));
+
+    console.table(tableData); 
+};
 const searchFriend = async () => {
   if (friendsRepository.getAllFriends().length === 0) {
     console.log("Your friend list is empty.");
@@ -129,23 +145,20 @@ const searchFriend = async () => {
   if (!searchQuery) return;
 
   const results = friendsRepository.searchFriends(searchQuery);
-
   if (results.match > 0) {
-    console.log(`\n Found ${results.match} matching friend(s):`);
-
-    results.data.forEach((f: Friend) => {
-      const status = f.balance >= 0 ? "Lent" : "Owed";
-      console.log(
-        ` ID: ${f.id} | Name: ${f.name} | ${status}: $${Math.abs(f.balance)}`,
-      );
-    });
-    console.log("-------------------------------");
-  } else {
-    console.log(" No matching friends found.");
-  }
+        console.log(`\n🔍 Found ${results.match} matching friend(s):`);
+        
+        console.table(results.data.map((f: Friend) => ({
+            Name: f.name,
+            Email: f.email,
+            Balance: f.balance
+        })));
+    } else {
+        console.log("No matching friends found.");
+    }
 };
 
-
+ 
 const updateFriend = async () => {
   const id = await ask("Enter the ID of the friend to update:");
   if (!id) return;
@@ -195,18 +208,22 @@ export const manageFriends = async () => {
         console.log('Adding friend...');
         break;
       case "2":
+        await listAllFriends();
+        console.log('List of friends....');
+        break;
+      case "3":
         await searchFriend();
         console.log('Searching friend...');
         break;
-      case "3":
+      case "4":
         await updateFriend();
         console.log('Updating friend...');
         break;
-      case "4":
+      case "5":
         await removeFriend();
         console.log('Removing friend...');
         break;
-      case "5":
+      case "6":
         console.log("Returning to main menu...");
         close();
         return;

@@ -24,12 +24,23 @@ class FriendsRepository {
   private async persist(): Promise<void> {
     await AppDBManager.getInstance().save();
   }
+  findFriendByName(name: string): Friend | undefined {
+    return this.friends.find(
+      (friend) => friend.name.toLowerCase() === name.toLowerCase(),
+    );
+  }
 
   async addFriend(friend: Friend): Promise<void> {
     this.friends.push(friend);
     await this.persist();
     console.log(`Friend added: ${friend.name}`);
   }
+  
+  // findFriendByName(name: string): Friend | undefined {
+  //   return this.friends.find(
+  //     (friend) => friend.name.toLowerCase() === name.toLowerCase(),
+  //   );
+  // }
 
   findFriendByEmail(email: string): Friend | undefined {
     return this.friends.find(
@@ -107,11 +118,11 @@ class FriendsRepository {
     return await this.removeFriend(friend.id);
   }
 
-  findFriendByName(name: string): Friend | undefined {
-    return this.friends.find(
-      (friend) => friend.name.toLowerCase() === name.toLowerCase(),
-    );
-  }
+  // findFriendByName(name: string): Friend | undefined {
+  //   return this.friends.find(
+  //     (friend) => friend.name.toLowerCase() === name.toLowerCase(),
+  //   );
+  // }
 
   getAllFriends(): Friend[] {
     return this.friends;

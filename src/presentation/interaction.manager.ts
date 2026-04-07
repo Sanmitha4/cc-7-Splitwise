@@ -36,14 +36,11 @@ export const openInteractionManager=()=>{
                 if (validator) {
                     const validationResult = validator(trimmedAnswer || "");
 
-                    // If validationResult is a string, it means validation failed 
-                    // and the string IS the error message.
                     if (typeof validationResult === "string") {
-                        console.log(`${validationResult}`); // Print the actual error message
-                        return resolve(ask(question, options)); // Recursive call to try again
+                        console.log(`${validationResult}`); 
+                        return resolve(ask(question, options)); 
                     }
 
-                    // If it's a boolean and it's false, show generic error
                     if (validationResult === false) {
                         console.log('Invalid input. Please try again.');
                         return resolve(ask(question, options));

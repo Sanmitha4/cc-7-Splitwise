@@ -5,27 +5,47 @@ import { ConflictError } from "../core/errors/conflict.error.js";
 export class FriendsController {
   private repository = friendsRepository;
 
-  checkEmailExists(email: string) {
-    return false;
+  checkNameExists(name:string):boolean{
+    return !!this.repository.findFriendByName(name);
+
   }
-  checkPhoneExists(phone: string) {
-    return false;
+
+  checkEmailExists(email: string): boolean {
+    return !!this.repository.findFriendByEmail(email);
   }
+
+  checkPhoneExists(phone: string): boolean {
+    return !!this.repository.findFriendByPhone(phone);
+  }
+
   async addFriend(friend: Friend): Promise<void> {
-    // Business Rule Check
+    
+    // if(this.checkNameExists(friend.name)){
+    //   throw new ConflictError(
+    //     `Name ${friend.name} is already used.`
+    //   )
+    // })
+    if (this.checkNameExists(friend.name)) {
+        throw new ConflictError(
+            `a friend with name ${friend.name}  already exists.`, 
+            "DUPLICATE_NAME",
+            "name"
+        );
+    }
+
     if (this.checkEmailExists(friend.email)) {
         throw new ConflictError(
             `Email ${friend.email} is already in use.`, 
-            "DUPLICATE_EMAIL"
-            // "email"
+            "DUPLICATE_EMAIL",
+            "email"
         );
     }
 
     if (this.checkPhoneExists(friend.phone)) {
         throw new ConflictError(
             `Phone ${friend.phone} is already registered.`, 
-            "DUPLICATE_PHONE"
-            //"phone"
+            "DUPLICATE_PHONE",
+            "phone"
         );
     }
 
