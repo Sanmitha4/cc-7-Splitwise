@@ -58,26 +58,34 @@ const addFriend = async () => {
     };
     const showFriendForm = async () => {
     try {
-        if (!friendFormData.name) {
-            friendFormData.name = (await ask("Enter friend's name:", { validator: nameValidator })) ?? '';
+      while(!friendFormData.name){
+        const input=(await ask("Enter friend's name:",{validator:nameValidator}))??'';
+        if(friendsController.checkNameExists(input)){
+          console.log(`The name ${input} already exist in database`);
+        }else{
+          friendFormData.name=input;
         }
+      }
 
-        if (!friendFormData.email) {
-            friendFormData.email = (await ask("Enter friend's email:", { validator: emailValidator })) ?? '';
+      while(!friendFormData.email){
+        const input=(await ask("Enter friend's email:",{validator:emailValidator}))??'';
+        if(friendsController.checkEmailExists(input)){
+          console.log(`The email ${input} already exits in database `);
+        }else{
+          friendFormData.email=input;
         }
-
-        if (!friendFormData.phone) {
-            friendFormData.phone = (await ask("Enter friend's phone:", { validator: phoneValidator })) ?? '';
+      }
+      
+      while(!friendFormData.phone){
+        const input=(await ask("Enter friend's phone:",{validator:phoneValidator}))??'';
+        if(friendsController.checkPhoneExists(input)){
+          console.log(`The phone ${input} already exists in database`);
+        }else{
+          friendFormData.phone=input;
         }
-
-        if (friendFormData.openingBalance === '0') {
-            friendFormData.openingBalance = (await ask(
-                "Enter opening balance (use +ve if they owe you, -ve if you owe them):",
-                { validator: numberValidator }
-            )) ?? '0';
-        }
-
-        return friendFormData;
+      }
+      friendFormData.openingBalance=(await ask ("Enter opening balance",{validator:numberValidator}))??'0';
+      return friendFormData;
 
     } catch (error) {
         console.error("\n Friend registration interrupted.");
@@ -119,7 +127,7 @@ const listAllFriends = () => {
     const friends = friendsController.allFriends(); // Get data from Controller
     
     if (friends.length === 0) {
-        console.log("\n📭 Your friends list is empty.");
+        console.log("\n Your friends list is empty.");
         return;
     }
 
@@ -146,12 +154,14 @@ const searchFriend = async () => {
 
   const results = friendsRepository.searchFriends(searchQuery);
   if (results.match > 0) {
-        console.log(`\n🔍 Found ${results.match} matching friend(s):`);
+        console.log(`\nFound ${results.match} matching friend(s):`);
         
         console.table(results.data.map((f: Friend) => ({
-            Name: f.name,
-            Email: f.email,
-            Balance: f.balance
+          ID: f.id,
+          Name: f.name,
+          Email: f.email,
+          Phone:f.phone,
+          Balance: f.balance
         })));
     } else {
         console.log("No matching friends found.");
@@ -160,8 +170,8 @@ const searchFriend = async () => {
 
  
 const updateFriend = async () => {
-  const id = await ask("Enter the ID of the friend to update:");
-  if (!id) return;
+  const updateName = await ask("Enter the name of the friend to update:");
+  if (!updateName) return;
 
   console.log("Leave blank to keep current value.");
   const name = await ask("New name:");
@@ -175,7 +185,7 @@ const updateFriend = async () => {
   if (phone) updates.phone = phone;
   //if (address) updates.address = address;
 
-  const result = await friendsRepository.updateFriend(id, updates);
+  const result = await friendsRepository.updateFriend(updateName, updates);
 
   if (result) {
     console.log(" Friend updated successfully.");

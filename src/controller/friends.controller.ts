@@ -7,7 +7,6 @@ export class FriendsController {
 
   checkNameExists(name:string):boolean{
     return !!this.repository.findFriendByName(name);
-
   }
 
   checkEmailExists(email: string): boolean {
