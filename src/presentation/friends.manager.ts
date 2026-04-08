@@ -172,8 +172,8 @@ const searchFriend = async () => {
 // src/presentation/friends.manager.ts
 
 const updateFriend = async () => {
-    // STEP 1: SEARCH
-    const query = await ask("Search for the friend you want to update (Name/Email/Phone):");
+    // STEP 1: INITIAL SEARCH
+    const query = await ask("Enter the name (or Email/Phone) of the friend to update:");
     if (!query) return;
 
     const queryResult = friendsRepository.searchFriends(query);
@@ -183,17 +183,19 @@ const updateFriend = async () => {
         return;
     }
 
-    // STEP 2: DISPLAY & SELECT BY INDEX
-    console.log("\n--- Search Results ---");
-    queryResult.data.map((f: Friend, index: number) => ({
-      "Index": index + 1,
-      "Name": f.name,
-      "Email": f.email,
-      "Phone": f.phone
-    }));
+    // STEP 2: DISPLAY RESULTS AND SELECT BY INDEX
     
 
-    const indexInput = await ask("Enter the Index number of the friend to update (or press Enter to cancel):", {
+    console.log("\n--- Search Results ---");
+    const tableData = queryResult.data.map((f: Friend, index: number) => ({
+        "Index": index + 1,
+        "Name": f.name,
+        "Email": f.email,
+        "Phone": f.phone
+    }));
+    console.table(tableData);
+
+    const indexInput = await ask("Enter the Index number to update (or Enter to cancel):", {
         validator: (val) => {
             if (val === "") return true;
             const num = parseInt(val);
@@ -202,29 +204,59 @@ const updateFriend = async () => {
     });
 
     if (!indexInput) return;
-    const friend = queryResult.data[parseInt(indexInput) - 1];
+    
+    // Assign to 'selectedFriend' so the rest of your code works
+    const selectedFriend = queryResult.data[parseInt(indexInput) - 1];
 
-    // STEP 3: EDIT WITH RETRY LOOPS
+    // Safety Guard: Stop if selection somehow failed
+    if (!selectedFriend) {
+        console.log("Error selecting friend.");
+        return;
+    }
+
+    // STEP 3: INDIVIDUAL UPDATE LOOPS
     console.log(`\nEditing: ${selectedFriend.name}. Leave blank to keep current value.`);
 
-    const newName = await ask(`New name [${selectedFriend.name}]:`) || selectedFriend.name;
-    
-    // Validate unique email if changed
+    // --- Name Update ---
+    let newName = selectedFriend.name;
+    let nameValid = false;
+    while (!nameValid) {
+        const input = await ask(`New name [${selectedFriend.name}]:`, { validator: nameValidator }) || selectedFriend.name;
+        if (input !== selectedFriend.name && friendsController.checkNameExists(input)) {
+            console.log(`The name "${input}" already exists in the database.`);
+        } else {
+            newName = input;
+            nameValid = true;
+        }
+    }
+
+    // --- Email Update ---
     let newEmail = selectedFriend.email;
     let emailValid = false;
     while (!emailValid) {
         const input = await ask(`New email [${selectedFriend.email}]:`, { validator: emailValidator }) || selectedFriend.email;
         if (input !== selectedFriend.email && friendsController.checkEmailExists(input)) {
-            console.log("This email is already taken by another friend.");
+            console.log(`The email "${input}" already exists in the database.`);
         } else {
             newEmail = input;
             emailValid = true;
         }
     }
 
-    const newPhone = await ask(`New phone [${selectedFriend.phone}]:`, { validator: phoneValidator }) || selectedFriend.phone;
+    // --- Phone Update ---
+    let newPhone = selectedFriend.phone;
+    let phoneValid = false;
+    while (!phoneValid) {
+        const input = await ask(`New phone [${selectedFriend.phone}]:`, { validator: phoneValidator }) || selectedFriend.phone;
+        if (input !== selectedFriend.phone && friendsController.checkPhoneExists(input)) {
+            console.log(`The phone number "${input}" already exists in the database.`);
+        } else {
+            newPhone = input;
+            phoneValid = true;
+        }
+    }
 
-    // STEP 4: SAVE
+    // STEP 4: SAVE CHANGES
     const updatedData: Friend = {
         ...selectedFriend,
         name: newName,
@@ -233,7 +265,7 @@ const updateFriend = async () => {
     };
 
     await friendsController.updateFriends(updatedData);
-    console.log(`\n${selectedFriend.name} updated successfully!`);
+    console.log(`\nFriend updated successfully: ${updatedData.name} | ${updatedData.email} | ${updatedData.phone}`);
 };
 // const updateFriend = async () => {
 //   const updateName = await ask("Enter the name of the friend to update:");
