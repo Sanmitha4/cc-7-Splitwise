@@ -24,13 +24,13 @@ export class FriendsController {
     //     `Name ${friend.name} is already used.`
     //   )
     // })
-    if (this.checkNameExists(friend.name)) {
-        throw new ConflictError(
-            `a friend with name ${friend.name}  already exists.`, 
-            "DUPLICATE_NAME",
-            "name"
-        );
-    }
+    // if (this.checkNameExists(friend.name)) {
+    //     throw new ConflictError(
+    //         `a friend with name ${friend.name}  already exists.`, 
+    //         "DUPLICATE_NAME",
+    //         "name"
+    //     );
+    // }
 
     if (this.checkEmailExists(friend.email)) {
         throw new ConflictError(
