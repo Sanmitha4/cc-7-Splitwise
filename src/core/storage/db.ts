@@ -24,7 +24,7 @@ export class JsonAdapter<T> implements DatabaseStorageAdaptor<T> {
   }
 
   serialize(dataset: T): string {
-    return JSON.stringify(dataset)
+    return JSON.stringify(dataset, null, 2)
   }
 }
 export class Database<T extends{[K in keyof T]:Table} > {
