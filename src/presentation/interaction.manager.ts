@@ -51,8 +51,6 @@ export const openInteractionManager=()=>{
             });
         });
     };
-
-    // ... rest of your code
 //     const ask:(question:string,options?:AskOptions) =>Promise<string|undefined>= async (question:string, options?:AskOptions) => {
 //     const {defaultAnswer,validator}=options||{};
 

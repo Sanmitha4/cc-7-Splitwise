@@ -8,15 +8,12 @@ export class FriendsController {
   checkNameExists(name:string):boolean{
     return !!this.repository.findFriendByName(name);
   }
-
   checkEmailExists(email: string): boolean {
     return !!this.repository.findFriendByEmail(email);
   }
-
   checkPhoneExists(phone: string): boolean {
     return !!this.repository.findFriendByPhone(phone);
   }
-
   async addFriend(friend: Friend): Promise<void> {
     
     // if(this.checkNameExists(friend.name)){
@@ -31,7 +28,6 @@ export class FriendsController {
     //         "name"
     //     );
     // }
-
     if (this.checkEmailExists(friend.email)) {
         throw new ConflictError(
             `Email ${friend.email} is already in use.`, 
@@ -39,7 +35,6 @@ export class FriendsController {
             "email"
         );
     }
-
     if (this.checkPhoneExists(friend.phone)) {
         throw new ConflictError(
             `Phone ${friend.phone} is already registered.`, 
@@ -47,7 +42,6 @@ export class FriendsController {
             "phone"
         );
     }
-
     console.log("Adding friend to database...", friend.name);
     await this.repository.addFriend(friend);
   }
@@ -61,7 +55,6 @@ export class FriendsController {
     }
     return this.repository.findFriendByName(name);
   }
-
   updateFriends(friend: Friend) {
     if (!this.repository) {
       return { success: false };
@@ -81,5 +74,4 @@ export class FriendsController {
     return this.repository.getAllFriends();
   }
 }
-
 export const friendsController = new FriendsController();
