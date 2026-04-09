@@ -169,223 +169,199 @@ const searchFriend = async () => {
         console.log("No matching friends found.");
     }
 };
-// const updateFriend = async () => {
-//     // STEP 1: SEARCH
-//     const query = await ask("Search for the friend to update (Name/Email/Phone):");
-//     if (!query) return;
 
-//     const queryResult = friendsRepository.searchFriends(query);
-
-//     if (queryResult.match === 0) {
-//         console.log("No friends found matching that query.");
-//         return;
-//     }
-
-//     // STEP 2: DISPLAY & SELECT BY INDEX
-//     console.log("\n--- Search Results ---");
-//     // We map the data to ensure Index 1 corresponds to array position 0
-//     console.table(queryResult.data.map((f: Friend, index: number) => ({
-//         "Index": index + 1,
-//         "ID": f.id,
-//         "Name": f.name,
-//         "Email": f.email,
-//         "Phone": f.phone,
-//         "Balance": f.balance
-//     })));
-
-//     const indexInput = await ask("Enter the Index number of the friend to update (or Enter to cancel):", {
-//         validator: (val) => {
-//             if (val === "") return true;
-//             const num = parseInt(val);
-//             return (!isNaN(num) && num > 0 && num <= queryResult.match) || "Please enter a valid index from the table.";
-//         }
-//     });
-
-//     if (!indexInput) return;
-//     const selectedFriend = queryResult.data[parseInt(indexInput) - 1];
-
-//     console.log(`\nEditing: ${selectedFriend.name}. Leave blank to keep current value.`);
-
-//     // STEP 3: INTERACTIVE FIELD UPDATES WITH RETRY LOOPS
-    
-//     // --- Update Name ---
-//     let newName = selectedFriend.name;
-//     let nameValid = false;
-//     while (!nameValid) {
-//         const input = await ask(`New name [${selectedFriend.name}]:`) || selectedFriend.name;
-//         const validation = nameValidator(input); // Format check
-        
-//         if (validation !== true) {
-//             console.log(validation);
-//         } else if (input !== selectedFriend.name && friendsController.checkNameExists(input)) {
-//             console.log(`The name ${input} is already taken by another friend.`); // DB check
-//         } else {
-//             newName = input;
-//             nameValid = true;
-//         }
-//     }
-
-//     // --- Update Email ---
-//     let newEmail = selectedFriend.email;
-//     let emailValid = false;
-//     while (!emailValid) {
-//         const input = await ask(`New email [${selectedFriend.email}]:`) || selectedFriend.email;
-//         const validation = emailValidator(input); // Format check
-        
-//         if (validation !== true) {
-//             console.log(validation);
-//         } else if (input !== selectedFriend.email && friendsController.checkEmailExists(input)) {
-//             console.log(`The email ${input} is already in use.`); // DB check
-//         } else {
-//             newEmail = input;
-//             emailValid = true;
-//         }
-//     }
-
-//     let newPhone = selectedFriend.phone;
-//     let phoneValid = false;
-//     while (!phoneValid) {
-//         const input = await ask(`New phone [${selectedFriend.phone}]:`) || selectedFriend.phone;
-//         const validation = phoneValidator(input); // Format check
-        
-//         if (validation !== true) {
-//             console.log(validation);
-//         } else if (input !== selectedFriend.phone && friendsController.checkPhoneExists(input)) {
-//             console.log(`The phone number ${input} is already registered.`); // DB check
-//         } else {
-//             newPhone = input;
-//             phoneValid = true;
-//         }
-//     }
-
-//     const updatedData: Friend = {
-//         ...selectedFriend,
-//         name: newName,
-//         email: newEmail,
-//         phone: newPhone
-//     };
-
-//     await friendsController.updateFriends(updatedData); // Persist to database
-    
-//     console.log(`\nUpdate Successful! Current Details:`);
-//     console.table([{
-//         ID: updatedData.id,
-//         Name: updatedData.name,
-//         Email: updatedData.email,
-//         Phone: updatedData.phone,
-//         Balance: updatedData.balance
-//     }]);
-// };
-
-
-
-
-
-
-
-
-
-
-
-// const updateFriend = async () => {
-//     const query = await ask("Search for the friend you want to update (Name/Email/Phone):");
-//     if (!query) return;
-
-//     const queryResult = friendsRepository.searchFriends(query);
-
-//     if (queryResult.match === 0) {
-//         console.log("No friends found matching that query.");
-//         return;
-//     }
-
-//     console.log("\n--- Search Results ---");
-//     queryResult.data.map((f: Friend, index: number) => ({
-//       "Index": index + 1,
-//       "Name": f.name,
-//       "Email": f.email,
-//       "Phone": f.phone,
-//       "Balance":f.balance
-//     }));
-    
-
-//     const indexInput = await ask("Enter the Index number of the friend to update (or press Enter to cancel):", {
-//         validator: (val) => {
-//             if (val === "") return true;
-//             const num = parseInt(val);
-//             return (!isNaN(num) && num > 0 && num <= queryResult.match) || "Please enter a valid index from the table.";
-//         }
-//     });
-
-//     if (!indexInput) return;
-//     const selectedFriend = queryResult.data[parseInt(indexInput) - 1];
-
-
-
-//     console.log(`\nEditing: ${selectedFriend.name}. Leave blank to keep current value.`);
-
-//     const newName = await ask(`New name [${selectedFriend.name}]:`) || selectedFriend.name;
-    
-//     // Validate unique email if changed
-//     let newEmail = selectedFriend.email;
-//     let emailValid = false;
-//     while (!emailValid) {
-//         const input = await ask(`New email [${selectedFriend.email}]:`, { validator: emailValidator }) || selectedFriend.email;
-//         if (input !== selectedFriend.email && friendsController.checkEmailExists(input)) {
-//             console.log("This email is already taken by another friend.");
-//         } else {
-//             newEmail = input;
-//             emailValid = true;
-//         }
-//     }
-
-//     const newPhone = await ask(`New phone [${selectedFriend.phone}]:`, { validator: phoneValidator }) || selectedFriend.phone;
-
-//     // STEP 4: SAVE
-//     const updatedData: Friend = {
-//         ...selectedFriend,
-//         name: newName,
-//         email: newEmail,
-//         phone: newPhone
-//     };
-
-//     await friendsController.updateFriends(updatedData);
-//     console.log(`\n${selectedFriend.name} updated successfully!`);
-// };
 const updateFriend = async () => {
-  const id = await ask("Enter the id of the friend to update:");
-  if (!id) return;
+    // STEP 1: SEARCH (DRY - using repository method)
+    const query = await ask("Search for the friend to update (Name/Email/Phone):");
+    if (!query) return;
 
-  console.log("Leave blank to keep current value.");
-  const name = await ask("New name:");
-  const email = await ask("New email:");
-  const phone = await ask("New phone:");
-  //const address = await ask("New address:");
+    const queryResult = friendsRepository.searchFriends(query); //
 
-  const updates: Partial<Omit<Friend, "id">> = {};
-  if (name) updates.name = name;
-  if (email) updates.email = email;
-  if (phone) updates.phone = phone;
-  //if (address) updates.address = address;
+    if (queryResult.match === 0) {
+        console.log("No friends found matching that query.");
+        return;
+    }
 
-  const result = await friendsRepository.updateFriend(id, updates);
+    // STEP 2: DISPLAY TABLE
+    console.log("\n--- Search Results ---");
+    console.table(queryResult.data.map((f: Friend, index: number) => ({
+        "Index": index + 1, // Human readable 1-based index
+        "ID": f.id,
+        "Name": f.name,
+        "Email": f.email,
+        "Phone": f.phone,
+        "Balance": f.balance
+    })));
 
-  if (result) {
-    console.log(" Friend updated successfully.");
-  } else {
-    console.log(" Friend not found or update failed.");
-  }
+    // STEP 3: SELECT BY INDEX
+    const indexInput = await ask("Enter the Index number of the friend to update (or Enter to cancel):", {
+        validator: (val) => {
+            if (val === "") return true;
+            const num = parseInt(val);
+            return (!isNaN(num) && num > 0 && num <= queryResult.match) || "Please enter a valid index from the table.";
+        }
+    });
+
+    if (!indexInput) return;
+    const selectedFriend = queryResult.data[parseInt(indexInput) - 1];
+    if (!selectedFriend) {
+    console.log("Error: Invalid selection. Please try again.");
+    return; // This "guards" the rest of the code
+}
+
+    console.log(`\nEditing: ${selectedFriend.name}. Leave blank to keep current value.`);
+
+    // STEP 4: INTERACTIVE FIELD UPDATES WITH VALIDATORS & UNIQUE CHECKS 
+    
+    // --- Update Name ---
+    let newName = selectedFriend.name;
+    const nameInput = await ask(`New name [${selectedFriend.name}]:`) || selectedFriend.name;
+    // Format check using your existing validator
+    if (nameValidator(nameInput) === true) {
+        newName = nameInput;
+    }
+
+    // --- Update Email ---
+    let newEmail = selectedFriend.email;
+    let emailValid = false;
+    while (!emailValid) {
+        const input = await ask(`New email [${selectedFriend.email}]:`) || selectedFriend.email;
+        const formatCheck = emailValidator(input); //
+        
+        if (formatCheck !== true) {
+            console.log(formatCheck);
+        } else if (input !== selectedFriend.email) {
+            // UNIQUE CHECK: Check if email is used by ANYONE ELSE 
+            const otherFriend = friendsRepository.getAllFriends().find(f => 
+                f.email.toLowerCase() === input.toLowerCase() && f.id !== selectedFriend.id
+            );
+            
+            if (otherFriend) {
+                console.log(`The email ${input} is already taken by another friend.`);
+            } else {
+                newEmail = input;
+                emailValid = true;
+            }
+        } else {
+            emailValid = true; // Kept current email
+        }
+    }
+
+    // --- Update Phone ---
+    let newPhone = selectedFriend.phone;
+    let phoneValid = false;
+    while (!phoneValid) {
+        const input = await ask(`New phone [${selectedFriend.phone}]:`) || selectedFriend.phone;
+        const formatCheck = phoneValidator(input); //
+        
+        if (formatCheck !== true) {
+            console.log(formatCheck);
+        } else if (input !== selectedFriend.phone) {
+            // UNIQUE CHECK: Check if phone is used by ANYONE ELSE 
+            const otherFriend = friendsRepository.getAllFriends().find(f => 
+                f.phone === input && f.id !== selectedFriend.id
+            );
+
+            if (otherFriend) {
+                console.log(`The phone number ${input} is already registered to another friend.`);
+            } else {
+                newPhone = input;
+                phoneValid = true;
+            }
+        } else {
+            phoneValid = true; // Kept current phone
+        }
+    }
+
+    // STEP 5: SAVE 
+    const updatedData: Partial<Omit<Friend, 'id'>> = {
+        name: newName,
+        email: newEmail,
+        phone: newPhone
+    };
+
+    await friendsRepository.updateFriend(selectedFriend.id, updatedData); //
+    console.log(`\n${selectedFriend.name} updated successfully!`);
 };
 
 const removeFriend = async () => {
-  const id = await ask("Enter the ID of the friend to remove:");
-  if (!id) return;
-  const success = await friendsRepository.removeFriend(id);
+    // STEP 1: SEARCH (DRY - Reuse search logic)
+    const query = await ask("Search for the friend to delete (Name/Email/Phone):");
+    if (!query) return;
 
-  if (success) {
-    console.log("Friend removed successfully.");
-  } else {
-    console.log("Friend not found or removal failed.");
-  }
+    const queryResult = friendsRepository.searchFriends(query);
+
+    if (queryResult.match === 0) {
+        console.log("No matching friends found.");
+        return;
+    }
+
+    // STEP 2: DISPLAY TABLE
+    console.log("\n--- Search Results ---");
+    console.table(queryResult.data.map((f: Friend, index: number) => ({
+        
+        "ID": f.id,
+        "Name": f.name,
+        "Email": f.email,
+        "Phone": f.phone,
+        "Balance": f.balance
+    })));
+
+    // STEP 3: SELECT BY INDEX
+    const indexInput = await ask("Enter the Index number to delete (or Enter to cancel):", {
+        validator: (val) => {
+            if (val === "") return true;
+            const num = parseInt(val);
+            return (!isNaN(num) && num > 0 && num <= queryResult.match) || "Please enter a valid index.";
+        }
+    });
+
+    if (!indexInput) return;
+    const selectedFriend = queryResult.data[parseInt(indexInput) - 1];
+
+    if (!selectedFriend) {
+        console.log("Error: Invalid selection.");
+        return;
+    }
+
+    // STEP 4: BALANCE CHECK & FIRST CONFIRMATION
+    if (selectedFriend.balance !== 0) {
+        const balanceStatus = selectedFriend.balance > 0 
+            ? `owes you $${selectedFriend.balance}` 
+            : `is owed $${Math.abs(selectedFriend.balance)}`;
+        
+        console.log(`\nWARNING: This friend still ${balanceStatus}.`);
+        const confirmBalance = await ask("Are you sure you want to proceed with deletion? (yes/no):");
+        
+        if (confirmBalance?.toLowerCase() !== 'yes') {
+            console.log("Deletion cancelled.");
+            return;
+        }
+    }
+
+    // STEP 5: FINAL CONFIRMATION WITH DETAILS
+    console.log("\n--- Final Confirmation: Friend to be Deleted ---");
+    console.table([{
+        ID: selectedFriend.id,
+        Name: selectedFriend.name,
+        Email: selectedFriend.email,
+        Phone: selectedFriend.phone,
+        Balance: selectedFriend.balance
+    }]);
+
+    const finalConfirm = await ask(`Are you absolutely sure you want to delete ${selectedFriend.name}? (yes/no):`);
+
+    if (finalConfirm?.toLowerCase() === 'yes') {
+        // STEP 6: EXECUTE DELETION
+        const success = await friendsRepository.removeFriend(selectedFriend.id);
+        if (success) {
+            console.log(`\nSuccess: ${selectedFriend.name} has been removed.`);
+        } else {
+            console.log("\nError: Deletion failed in the database.");
+        }
+    } else {
+        console.log("\nDeletion unsuccessful. Returning to main menu.");
+    }
 };
 
 export const manageFriends = async () => {
